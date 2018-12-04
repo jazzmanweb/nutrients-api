@@ -1,0 +1,44 @@
+What are Lists?
+
+You may request a list of foods, nutrients or food groups. List requests are good for providing your users with a paged browse and select experience. For example, your application might allow users to select a food from a foods list to generate a Food Reports request.
+How it Works
+
+Basically, you need to indicate the type of list you're requesting and the number of items you want returned on the list up to a maximum of 1500 items in a single request. You can also specify an offset (a zero-based start point) into a list for a paged experience.
+Request Parameters
+
+Your api_key is the only required parameter to generate a list. With no other parameters the request will return 50 foods items sorted by food name beginning with the first item (0 offset) in JSON format.
+Name	Required	Default	Description
+api_key	y	n/a	Must be a data.gov registered API key
+lt	n	f	list type(lt): d = derivation codes, f = food , n = all nutrients, ns = speciality nutrients, nr = standard release nutrients only,g = food group
+max	n	50	maximum number of items to return
+offset	n	0	beginning item in the result set
+sort	n	n	sort order: n=name or id (Meaning of id varies by list type: nutrient number for a nutrient list, NDBno for a foods list ,food group id for a food group list
+format1	n	JSON	report format: JSON or XML
+
+1Format can also be sent in the request header: Content-Type: application/json or Content-Type:application/xml.
+Response Elements
+
+The list response is very simple, consisting of some metadata about your request and a list of names and id's. The meaning of the name and id elements are dependent on the type of list requested in the lt parameter. If you have requested a list of foods, then the name element will refer to the name of the food and the id to the food's NDBno. For food groups lists, name references the name of the food group and id to the food group's unique id. And, for nutrients, name refers to the nutrient name and id to the unique id assigned to each nutrient in the database called nutrient_no.
+
+list 	information about the request and the items returned
+	type 	type of list requested
+	start 	beginning offset
+	end	ending offset
+	total 	number of items in the list
+	sort 	sort order of the list
+	sr	Standard Release version of the data being reported
+item 	information about individual items on the list
+	id	ndbno for type 'f'; nutrient no for type 'n' or group no for type 'g'
+	name	item name
+
+Some Examples
+
+These examples illustrate how to request a list of foods sorted by food name.
+XML:
+
+Browser: https://api.nal.usda.gov/ndb/list?format=xml&lt=g&sort=n&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/xml" -d '<list><lt>f</lt><sort>n</sort></list>' DEMO_KEY@api.nal.usda.gov/ndb/list
+JSON:
+
+Browser: https://api.nal.usda.gov/ndb/list?format=json&lt=f&sort=n&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/json" -d '{"lt":"f","sort":"n"}' DEMO_KEY@api.nal.usda.gov/ndb/list 

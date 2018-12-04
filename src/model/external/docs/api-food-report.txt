@@ -1,0 +1,87 @@
+What is a Food Report Version 1? (Version 2)
+
+A Food Report is a list of nutrients and their values in various portions for a specific food. The data elements returned in the API request match those in the Reports component of the NDB search application. Please take a look at this component if you are not familiar with it how it works by reviewing a report for chedder cheese. Reports are available in three formats: basic, full or statistics. A “Basic Report” contains a limited set of nutrients, based upon those found on a nutrition facts panel of a package of food, or frequently requested while a “Full Report” contains all the nutrients found in SR for that food. The "Statistics Report" provides all the statistical parameters available in SR. Additonal information on reports is available here.
+
+Please note that reports for foods from the Branded Food Products database are only availalbe in a "basic" format. So, even though you may request a "Full" or "Statistics" report for Branded Food Products foods, you will only receive a "Basic" report.
+
+How it Works
+
+Each food in the NDB is assigned a unique ID called the NDB number (NDBno). You must know a food's NDBno to retrieve a report. If you don't know a food's NDBno you may use either the list or search API to obtain it.
+
+Request Parameters
+Parameter	Required	Default	Description
+api_key	y	n/a	Must be a data.gov registered API key
+ndbno	y	n/a	NDB no
+type	n	b (basic)	Report type: [b]asic or [f]ull or [s]tats
+format1	n	JSON	Report format: xml or json
+
+1Format can also be sent in the request header: Content-Type: application/json or Content-Type:application/xml.
+
+Response Elements
+
+A response can be lengthy but it's structure is relatively simple consisting of basic metadata for a food such as it's name, the food group to which belongs, scientific name and so on and a list of nutrients and nutrient values. For each nutrient in the list, some metadata is provided such as name and the unit in which it is measured and it's value expressed in 100g. Nutrients will also have a list of measures which are values of the nutrient at various portions, e.g. 1 cup. Measures vary by food and nutrient. Nutrients may also have a list of reference sources which are usually bibliographic citations in a non-standard format.
+report	basic information about the report
+	type	Report type
+	sr	Release version of the data being reported
+food	metadata elements for the food being reported
+	ndbno	NDB food number
+	name	food name
+	sd	short description
+	group 	food group
+	sn	scientific name
+	cn 	commercial name
+	manu 	manufacturer
+	nf	nitrogen to protein conversion factor
+	cf	carbohydrate factor
+	ff	fat factor
+	pf	protein factor
+	r	refuse %
+	rd	refuse description
+	ds	database source: 'Branded Food Products' or 'Standard Reference'
+	ru	reporting unit: nutrient values are reported in this unit, usually gram (g) or milliliter (ml)
+ing	ingredients (Branded Food Products report only)
+	desc	list of ingredients
+	upd	date ingredients were last updated by company
+nutrient 	metadata elements for each nutrient included in the food report
+	nutrient_id 	nutrient number (nutrient_no) for the nutrient
+	name 	nutrient name
+	sourcecode	list of source id's in the sources list referenced for this nutrient
+	unit	unit of measure for this nutrient
+	value	100 g equivalent value of the nutrient
+	dp	# of data points
+	se	standard error
+	derivation	Indicator of how the value was derived
+measures 	list of measures reported for a nutrient
+	label	name of the measure, e.g. "large"
+	eqv 	equivalent of the measure expressed as an eunit
+	eunit	Unit in with the equivalent amount is expressed. Usually either gram (g) or milliliter (ml)
+	value 	gram equivalent value of the measure
+source 	reference source, usually a bibliographic citation, for the food
+	title	name of reference
+	authors	authors of the report
+	vol	volume
+	iss	issue
+	year	publication year
+	start 	start page
+	end	end page
+footnote
+	idv	footnote id
+	desc	text of the foodnote
+langual	LANGUAL codes assigned to the food
+	code	LANGUAL code
+	desc 	description of the code
+
+
+Some Examples
+
+
+XML
+
+Here's a couple of ways you can obtain the chedder cheese (NDBno 01009 ) full report in XML format.
+Browser: https://api.nal.usda.gov/ndb/reports/?ndbno=01009&type=b&format=xml&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/xml" -d '<report><ndbno>01009</ndbno><type>f</type></report>' DEMO_KEY@api.nal.usda.gov/usda/ndb/reports
+JSON
+
+Here's a couple of ways you can obtain the chedder cheese (NDBno 01009 ) full report in JSON format.
+Browser: https://api.nal.usda.gov/ndb/reports/?ndbno=01009&type=b&format=json&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/json" -d '{"ndbno":"01009","type":"f"}' DEMO_KEY@api.nal.usda.gov/ndb/reports
