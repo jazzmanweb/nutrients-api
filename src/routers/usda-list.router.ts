@@ -1,9 +1,9 @@
-import { API_KEY } from 'config/config';
 import { ResponseFormatEnum } from '@model/external/enums/api.enums';
 import { ListSortEnum, ListTypeEnum } from '@model/external/enums/list.enums';
 import { ApiListRequestInterface } from '@model/external/interfaces/api-list-request.interface';
 import { RequestResponseModel } from '@model/internal/payloads/request-response.model';
 import { Request, Response, Router } from 'express';
+import { API_KEY } from '../../config/config';
 
 export class UsdaListRouter {
 	public router: Router;
