@@ -4,10 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"server": "nodemon ./dist/index.js",
+		"start": "nodemon -r ts-node/register -r tsconfig-paths/register dist/src/index.js",
+		"server": "nodemon ./dist/src/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"ts": "tsc",
-		"ts:r": "tsc --noResolve",
+		"ts:r": "tsc --traceResolution",
 		"ts:w": "tsc -w"
 	},
 	"repository": {
@@ -42,6 +43,7 @@
 		"@types/node": "^10.12.12",
 		"nodemon": "^1.18.7",
 		"ts-node": "^7.0.1",
+		"tsconfig-paths": "^3.7.0",
 		"tslint": "^5.11.0",
 		"typescript": "^3.2.1"
 	}
