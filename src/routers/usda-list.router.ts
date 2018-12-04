@@ -2,7 +2,7 @@ import { ResponseFormatEnum } from '@model/external/enums/api.enums';
 import { ListSortEnum, ListTypeEnum } from '@model/external/enums/list.enums';
 import { ApiListRequestInterface } from '@model/external/interfaces/api-list-request.interface';
 import { RequestResponseModel } from '@model/internal/payloads/request-response.model';
-import { Request, Response, Router } from 'express';
+import { Request, Response, Router, NextFunction } from 'express';
 import { API_KEY } from '../../config/config';
 
 export class UsdaListRouter {
@@ -26,33 +26,51 @@ export class UsdaListRouter {
 		this.routes();
 	}
 
-	public getList(listType: ListTypeEnum) {
-		return (req: Request, res: Response) => {
-			console.log(listType, req);
-			res.status(200).json(
-				new RequestResponseModel({
-					message: 'success',
-					payload: 'This is response'
-				})
-			);
+	public addType(type: ListTypeEnum) {
+		return (req: Request, res: Response, next: NextFunction) => {
+			res.locals.listType = type;
+			next();
 		};
 	}
 
+	// public getList(listType: ListTypeEnum) {
+	public getList(req: Request, res: Response, next: NextFunction) {
+		console.log(req, res);
+		res.status(200).json(
+			new RequestResponseModel({
+				message: 'success',
+				payload: res.locals
+			})
+		);
+	}
+	// }
+
 	public routes() {
-		this.router.get('/food', this.getList(ListTypeEnum.FOOD));
-		this.router.get('/food-group', this.getList(ListTypeEnum.FOOD_GROUP));
-		this.router.get('/nutrients', this.getList(ListTypeEnum.ALL_NUTRIENTS));
+		this.router.get('/food', this.addType(ListTypeEnum.FOOD), this.getList);
+		this.router.get(
+			'/food-group',
+			this.addType(ListTypeEnum.FOOD_GROUP),
+			this.getList
+		);
+		this.router.get(
+			'/nutrients',
+			this.addType(ListTypeEnum.ALL_NUTRIENTS),
+			this.getList
+		);
 		this.router.get(
 			'/derication-codes',
-			this.getList(ListTypeEnum.DERIVATION_CODES)
+			this.addType(ListTypeEnum.DERIVATION_CODES),
+			this.getList
 		);
 		this.router.get(
 			'/speciality-nutrients',
-			this.getList(ListTypeEnum.SPECIALITY_NUTRIENTS)
+			this.addType(ListTypeEnum.SPECIALITY_NUTRIENTS),
+			this.getList
 		);
 		this.router.get(
 			'/standard-release-nutrients',
-			this.getList(ListTypeEnum.STANDARD_RELEASE_NUTRIENTS)
+			this.addType(ListTypeEnum.STANDARD_RELEASE_NUTRIENTS),
+			this.getList
 		);
 	}
 }
