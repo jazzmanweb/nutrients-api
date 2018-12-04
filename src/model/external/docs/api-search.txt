@@ -1,0 +1,51 @@
+What are Searches?
+
+A search request sends keyword queries and returns lists of foods which contain one or more of the keywords in the food description, scientific name, or commerical name fields. Search requests are a good way to locate NDB numbers (NDBno) for the reports API as well as for general discovery.
+How it Works
+
+There are no restrictions, other than common sense, on the keywords which can be searched. It's very easy to create paged browsing by using the total and offset (a zero-based start point) parameters. You may want to try the discovery application to get a feel for how searching works. You may limit your search results to a specific food group by specifying a food group id or a food group description in the fg parameter. (You may wish to use the list request to identify the food group id or description you wish to use.)
+Parameters
+
+The only required parameter for a valid search request is your authentication key (api_key). The default sort order of results list is "relevance", i.e. how closely a food matches the query terms.
+Name	Required	Default	Description
+api_key	y	n/a	Must be a data.gov registered API key
+q	n	""	Search terms
+ds	n	""	Data source. Must be either 'Branded Food Products' or 'Standard Reference'
+fg	n	""	Food group ID
+sort	n	r	Sort the results by food name (n) or by search relevance (r)
+max	n	50	maximum rows to return
+offset	n	0	beginning row in the result set to begin
+format1	n	JSON 	results format: json or xml
+
+1Format can also be sent in the request header: Content-Type: application/json or Content-Type:application/xml.
+Response Elements
+
+A search response consists of information about the results of the search such as the total hits matching the query and the starting and ending points in the results list, followed by a list of foods. Metadata for each food in the returned list includes the food's description (name) and NDBno.
+
+list	information about the items returned
+	q	terms requested and used in the search
+	start	beginning item in the list
+	end	last item in the list
+	offset	beginning offset into the results list for the items in the list requested
+	total	total # of items returned by the search
+	sort	requested sort order (r=relevance or n=name)
+	fg	food group filter
+	sr	Standard Release version of the data being reported
+item	individual items on the list
+	ndbno 	the food’s NDB Number
+	name	the food’s name
+	group	food group to which the food belongs
+	ds	Data source: BL=Branded Food Products or SR=Standard Release
+	manu	The foods manufacturer
+
+Examples
+
+The examples below show how you might request a search for foods containing the word "butter" limiting the results to only those foods in the "Dairy and Egg Products" food group.
+XML
+
+Browser: https://api.nal.usda.gov/ndb/search/?format=xml&q=butter&max=25&offset=0&api_key=DEMO_KEY
+Curl: curl -H "Content-Type: application/xml" -d '<list><q>butter</q><max>25</max><offset>0</offset></list>' DEMO_KEY@api.nal.usda.gov/ndb/search
+JSON
+
+Browser: https://api.nal.usda.gov/ndb/search/?format=json&q=butter&sort=n&max=25&offset=0&api_key=DEMO_KEY
+Curl: curl -H "Content-Type: application/json" -d '{"q":"butter","max":"25","offset":"0"}' DEMO_KEY@api.nal.usda.gov/ndb/search 

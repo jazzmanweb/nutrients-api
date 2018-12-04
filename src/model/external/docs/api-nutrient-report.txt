@@ -1,0 +1,72 @@
+What is a Nutrient Report?
+
+A Nutrient Report is a list of foods and their nutrient values for a set of specified nutrients. This API request provides similar functionality to the Nutrients List component of the NDB search application. Please take a look at this component if you are not familiar with it how it works by reviewing a report for protein.
+
+How it Works
+
+Each nutrient in the NDB is assigned a unique ID (nutrient_id). You must know this id to retrieve a nutrient report. A nutrient_id may be obtained by using the list API request. Please note that nutrient reports are only available for nutrients in the Standard Release (SR). Reports are not available for "speciality data" nutrients such as the bioactive compounds nor for foods in the Branded Food Products database.
+Request Parameters
+
+In addition to the api_key parameter, a request requires at least one nutrient_id in the nutrients parameter. Up to 20 nutrient_ids may be specified. Likewise, you may request up to 10 food group id's in the fg parameter.
+Parameter	Required	Default	Description
+api_key	y	n/a	Must be a data.gov registered API key
+fg	n	""	limit your nutrients to one or more food groups by providing a list of food group ID's via the fg parameter. The default is a blank list meaning no food group filtering will be applied. Up to 10 food groups may be specified.
+format1	n	JSON	Report format: xml or json
+max	n	50	Number of rows to return. The maximum per request is 1,500.
+offset	n	0	beginning row in the result set to begin
+nbno	n	n/a	Report the nutrients for a single food identified by it's unique id -- nutrient number
+nutrients	y	n/a	a list of up to a maximum of 20 nutrient_id's to include in the report
+sort	n	f	Sort the list of foods by (f)ood name or nutrient (c)ontent. If you are requesting more than one nutrient and specifying sort = c then the first nutrient in your list is used for the content sort.
+subset	n	0	You may indicate all the foods in the SR database or an abridged list from the pull down menu. Set the subset parameter to 1 for the abridged list of about 1,000 foods commonly consumed in the U.S. The default 0 for all of the foods in the database
+
+1Format can also be sent in the request header: Content-Type: application/json or Content-Type:application/xml.
+Response Elements
+
+A response is structured as a list of one or more foods. Each food has list of one or more nutrients.
+report	basic information about the report
+	group	If applicable, the list of food groups used to filter the report
+	subset	The name of the subset of foods in the response or all foods
+	sr	Standard Release version of the data being reported
+	end	The number of the last item in the reports -- normally start + max.
+	start	Value of the offset parameter used in the report
+	total	The total number of items available in the reports. Useful for paging the report.
+foods	A list of foods
+	ndbno	NDB food number
+	name	food name
+	measure 	The household measure represented by the nutrient value element
+	nutrients	The list of nutrients and their values for a food
+	nutrient_id	Nutrient Number
+	nutrient	Description of the nutrient
+	unit	Unit in which the nutrient value is expressed
+	gm	The 100 gram equivalent value for the nutrient
+	value	Value of the nutrient for this food
+Some Examples
+
+Here's some nutrient reports you can obtain for Total lipids (nutrient_id=204, ), calories (nutrient_id=208), carbohydrates (nutrient_id=205) and sugars (nutrient_id=269) in either XML or JSON.
+XML
+
+All foods:
+Browser: http://api.nal.usda.gov/ndb/reports/?nutrients=204&nutrients=208&nutrients=205&nutrients=269&max=50&offset=25&format=xml&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/xml" -d '<report><fg>0100</fg><fg>0500</fg><nutrients>204</nutrients><nutrients>208</nutrients><nutrients>205</nutrients><nutrients>269</nutrients><max>50</max<offset>25</offset></report>' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
+
+For food groups Dairy and Egg Products (id = 0100) and Poultry Products ( id=0500)
+Browser: http://api.nal.usda.gov/ndb/reports/?fg=0100&fg=0500&nutrients=204&nutrients=208&nutrients=205&nutrients=269&max=50&offset=25&format=xml&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/xml" -d '<report><fg>0100</fg><fg>0500</fg><nutrients>204</nutrients><nutrients>208</nutrients><nutrients>205</nutrients><nutrients>269</nutrients><max>50</max><offset>25</offset></report>' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
+
+For chedder cheese (ndbno 01009) only:
+Browser: http://api.nal.usda.gov/ndb/reports/?nutrients=204&nutrients=208&nutrients=205&nutrients=269&ndbno=01009&max=50&offset=25&format=xml&api_key=DEMO_KEY
+CURL: curl -H "Content-Type:application/xml" -d '<report><ndbno>01009</ndbno><nutrients>204</nutrients><nutrients>208</nutrients><nutrients>205</nutrients><nutrients>269</nutrients><max>50</max><offset>25</offset></report>' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
+
+JSON
+
+All foods:
+Browser: http://api.nal.usda.gov/ndb/nutrients/?format=json&api_key=DEMO_KEY&nutrients=205&nutrients=204&nutrients=208&nutrients=269
+CURL: curl -H "Content-Type:application/json" -d '{"nutrients":["204","205","208","269"],"max":25,"offset":0}' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
+
+For food groups Dairy and Egg Products (id = 0100) and Poultry Products (id=0500):
+Browser: https://api.nal.usda.gov/ndb/nutrients/?format=json&api_key=DEMO_KEY&nutrients=205&nutrients=204&nutrients=208&nutrients=269&fg=0100&fg=0500
+CURL: curl -H "Content-Type:application/json" -d '{"nutrients":["204","205","208","269"],"fg":["0100","0500"],"max":25,"offset":0}' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
+
+For chedder cheese (ndbno 01009) only:
+Browser: https://api.nal.usda.gov/ndb/nutrients/?format=json&api_key=DEMO_KEY&nutrients=205&nutrients=204&nutrients=208&nutrients=269&ndbno=01009
+CURL: curl -H "Content-Type:application/json" -d '{"nutrients":["204","205","208","269"],"ndbno":"01009","max":25,"offset":0}' DEMO_KEY@api.nal.usda.gov/ndb/nutrients
