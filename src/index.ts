@@ -1,4 +1,4 @@
-import {App} from './src/app';
+import {App} from './app';
 
 const port = normalizePort(process.env.PORT || 3000);
 const exp = new App().app;
